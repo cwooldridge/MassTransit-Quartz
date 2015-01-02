@@ -60,18 +60,19 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SolutionVersion.cs">
-      <Link>SolutionVersion.cs</Link>
-    </Compile>
     <Compile Include="CancelScheduledMessageConsumer.cs" />
+    <Compile Include="CancelScheduledRecurringMessageConsumer.cs" />
     <Compile Include="CancelScheduledTimeoutConsumer.cs" />
     <Compile Include="MassTransitJobFactory.cs" />
     <Compile Include="ScheduledMessageContext.cs" />
     <Compile Include="ScheduledMessageJob.cs" />
+    <Compile Include="ScheduledRecurringMessageContext.cs" />
+    <Compile Include="ScheduledRecurringMessageJob.cs" />
     <Compile Include="ScheduledTimeoutJob.cs" />
     <Compile Include="ScheduleMessageConsumer.cs" />
     <Compile Include="ScheduleMessageJobBuilder.cs" />
     <Compile Include="ScheduleMessageJobBuilderImpl.cs" />
+    <Compile Include="ScheduleRecurringMessageConsumer.cs" />
     <Compile Include="ScheduleTimeoutConsumer.cs" />
   </ItemGroup>
   <ItemGroup>
