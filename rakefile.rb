@@ -70,23 +70,11 @@ task :copy4 => [:build4] do
 end
 
 desc "Only compiles the application."
-msbuild :build35 do |msb|
-	msb.properties :Configuration => "Release",
-		:Platform => 'Any CPU',
-                :TargetFrameworkVersion => "v3.5"
-	msb.use :net4
-	msb.targets :Clean, :Build
-  msb.properties[:SignAssembly] = 'true'
-  msb.properties[:AssemblyOriginatorKeyFile] = props[:keyfile]
-	msb.solution = 'src/MassTransit.Quartz.sln'
-end
-
-desc "Only compiles the application."
 msbuild :build4 do |msb|
 	msb.properties :Configuration => "Release",
 		:Platform => 'Any CPU'
 	msb.use :net4
-	msb.targets :Clean, :Build
+	msb.targets :Rebuild
   msb.properties[:SignAssembly] = 'true'
   msb.properties[:AssemblyOriginatorKeyFile] = props[:keyfile]
 	msb.solution = 'src/MassTransit.Quartz.sln'
@@ -100,16 +88,9 @@ def copyOutputFiles(fromDir, filePattern, outDir)
 end
 
 desc "Runs unit tests"
-nunit :tests35 => [:build35] do |nunit|
-          nunit.command = File.join('src', 'packages','NUnit.Runners.2.6.3', 'tools', 'nunit-console.exe')
-          nunit.options = "/framework=#{CLR_TOOLS_VERSION}", '/nothread', '/nologo', '/labels', "\"/xml=#{File.join(props[:artifacts], 'nunit-test-results-net-3.5.xml')}\""
-          nunit.assemblies = FileList[File.join(props[:src], "MassTransit.QuartzIntegration.Tests/bin/Release", "MassTransit.QuartzIntegration.Tests.dll")]
-end
-
-desc "Runs unit tests"
 nunit :tests4 => [:build4] do |nunit|
           nunit.command = File.join('src', 'packages','NUnit.Runners.2.6.3', 'tools', 'nunit-console.exe')
-          nunit.options = "/framework=#{CLR_TOOLS_VERSION}", '/nothread', '/nologo', '/labels', "\"/xml=#{File.join(props[:artifacts], 'nunit-test-results-net-4.0.xml')}\""
+          nunit.parameters = "/framework=#{CLR_TOOLS_VERSION}", '/nothread', '/nologo', '/labels', "\"/xml=#{File.join(props[:artifacts], 'nunit-test-results-net-4.0.xml')}\""
           nunit.assemblies = FileList[File.join(props[:src], "MassTransit.QuartzIntegration.Tests/bin/Release", "MassTransit.QuartzIntegration.Tests.dll")]
 end
 
@@ -117,9 +98,9 @@ task :package => [:nuget, :zip_output]
 
 desc "ZIPs up the build results."
 zip :zip_output => [:versioning] do |zip|
-	zip.directories_to_zip = [props[:output]]
-	zip.output_file = "MassTransit-Quartz-#{NUGET_VERSION}.zip"
-	zip.output_path = props[:artifacts]
+  zip.directories_to_zip = [props[:output]]
+  zip.output_file = "MassTransit-Quartz-#{NUGET_VERSION}.zip"
+  zip.output_path = props[:artifacts]
 end
 
 desc "restores missing packages"
@@ -148,8 +129,8 @@ nuspec :create_nuspec do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
-  nuspec.dependency "Magnum", "2.1.2"
-  nuspec.dependency "MassTransit", "2.9.5"
+  nuspec.dependency "Magnum", "2.1.3"
+  nuspec.dependency "MassTransit", "2.9.9"
   nuspec.output_file = File.join(props[:artifacts], 'MassTransit.Scheduling.nuspec')
   add_files File.join(props[:output], 'Scheduling'), 'MassTransit.Scheduling.{dll,pdb,xml}', nuspec
   nuspec.file(File.join(props[:src], "MassTransit.Scheduling\\**\\*.cs").gsub("/","\\"), "src")
@@ -167,12 +148,12 @@ nuspec :create_nuspec do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
-  nuspec.dependency "Magnum", "2.1.2"
-  nuspec.dependency "MassTransit", "2.9.5"
+  nuspec.dependency "Magnum", "2.1.3"
+  nuspec.dependency "MassTransit", "2.9.9"
   nuspec.dependency "MassTransit.Scheduling", NUGET_VERSION
-  nuspec.dependency "Common.Logging", "2.1.2"
-  nuspec.dependency "Newtonsoft.Json", "5.0.8"
-  nuspec.dependency "Quartz", "2.2.1"
+  nuspec.dependency "Common.Logging", "2.3.1"
+  nuspec.dependency "Newtonsoft.Json", "6.0.6"
+  nuspec.dependency "Quartz", "2.3.0"
   nuspec.output_file = File.join(props[:artifacts], 'MassTransit.QuartzIntegration.nuspec')
   add_files File.join(props[:output], 'Integration'), 'MassTransit.QuartzIntegration.{dll,pdb,xml}', nuspec
   nuspec.file(File.join(props[:src], "MassTransit.QuartzIntegration\\**\\*.cs").gsub("/","\\"), "src")
